@@ -3,6 +3,8 @@ const request = require('supertest')
 const testData = require('../db/data/test-data')
 const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
+const fs = require('fs.promises')
+const { values } = require('../db/data/test-data/articles')
 
 beforeEach(() => seed(testData))
 afterAll(() => db.end())
@@ -30,3 +32,20 @@ describe(('GET/api/topics'), () => {
         })
     })
 })
+describe("GET/api", () => {
+  test('200: responds with a full list of created endpoints as a JSON object', () => {
+    const expectedEndpoints = fs.readFile(`${__dirname}/../endpoints.json`, 'utf-8')
+    
+    const actualEndpoints = request(app)
+    .get('/api')
+    .expect(200)
+    .then(({body}) => {
+      return body
+    })
+
+    Promise.all([expectedEndpoints, actualEndpoints])
+    .then((values) => {
+      expect(values[0]).toEqual(values[1].endpoints)
+    })
+    })
+    })
