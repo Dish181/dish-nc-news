@@ -13,7 +13,7 @@ describe(('GET/api/topics'), () => {
         .get('/api/topics')
         .expect(200)
         .then(({body}) => {
-            expect(body).toEqual([
+            expect(body.topics).toEqual([
                 {
                   description: 'The man, the Mitch, the legend',
                   slug: 'mitch'
