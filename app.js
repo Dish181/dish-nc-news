@@ -3,12 +3,15 @@ const app = express()
 const { getTopics } = require('./controllers/topics-controllers')
 const { getArticle } = require('./controllers/articles-controllers')
 const {getEndpoints} = require('./controllers/general-controllers')
+const {getCommentsByArticle} = require('./controllers/comments-controllers')
 
 app.get('/api/topics', getTopics)
 
 app.get('/api/articles/:article_id', getArticle)
 
 app.get('/api', getEndpoints)
+
+app.get('/api/articles/:article_id/comments', getCommentsByArticle)
 
 app.use((err, req, res, next) => {
   if(err.code === '22P02'){
