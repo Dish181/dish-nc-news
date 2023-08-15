@@ -149,15 +149,87 @@ describe('GET/api/articles/:article_id/comments', () => {
 }
 )
 
-// describe('POST/api/articles/:article_id/comments', () => {
-//   test('201: Returns the posted comment object', () => {
-//   const newComment = {username: 'dish', body: 'pretty reductive, honestly'}
-//   return request(app)
-//   .post('/api/articles/11/comments')
-//   .send(newComment)
-//   .expect(201)
-//   .then(({rows}) => {
-//     expect(rows.postedComment).toEqual(newComment)
-//   })
-//   })
-// })
+describe('POST/api/articles/:article_id/comments', () => {
+  test('201: Returns the posted comment object', () => {
+  const newComment = {username: 'butter_bridge', body: 'pretty reductive, honestly'}
+  return request(app)
+  .post('/api/articles/11/comments')
+  .send(newComment)
+  .expect(201)
+  .then(({body}) => {
+    expect(Object.keys(body.postedComment).length).toBe(6)
+    expect(body.postedComment).toHaveProperty('author', 'butter_bridge')
+    expect(body.postedComment).toHaveProperty('article_id', 11)
+    expect(body.postedComment).toHaveProperty('body', 'pretty reductive, honestly')
+    expect(body.postedComment).toHaveProperty('comment_id', expect.any(Number))
+    expect(body.postedComment).toHaveProperty('created_at', expect.any(String))
+    expect(body.postedComment).toHaveProperty('votes', 0)
+  })
+  })
+  test('201: returns success when given a bloated object, but which contains all required fields', () => {
+    const newComment = {username: 'butter_bridge', body: 'pretty reductive, honestly', hat: 'fancy', age: '12'}
+  return request(app)
+  .post('/api/articles/11/comments')
+  .send(newComment)
+  .expect(201)
+  .then(({body}) => {
+    expect(Object.keys(body.postedComment).length).toBe(6)
+    expect(body.postedComment).toHaveProperty('author', 'butter_bridge')
+    expect(body.postedComment).toHaveProperty('article_id', 11)
+    expect(body.postedComment).toHaveProperty('body', 'pretty reductive, honestly')
+    expect(body.postedComment).toHaveProperty('comment_id', expect.any(Number))
+    expect(body.postedComment).toHaveProperty('created_at', expect.any(String))
+    expect(body.postedComment).toHaveProperty('votes', 0)
+  })
+  })
+  test(`400: responds with a bad request error when given a non-number article_id param`, () => {
+    const newComment = {username: 'butter_bridge', body: 'pretty bad request, honestly'}
+    return request(app)
+    .post('/api/articles/banana/comments')
+    .send(newComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test(`404: responds with a bad request error when given a valid article_id format, that doesn't exist`, () => {
+    const newComment = {username: 'butter_bridge', body: 'Where am I, honestly?'}
+    return request(app)
+    .post('/api/articles/900/comments')
+    .send(newComment)
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'not found')
+    })
+  })
+  test(`404: responds with a not found error when given a user_name which doesn't exist in the authors table`, () => {
+    const newComment = {username: 'dish', body: 'A mystery man'}
+    return request(app)
+    .post('/api/articles/11/comments')
+    .send(newComment)
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'not found')
+    })
+  })
+  test(`400: responds with a bad request error when the required fields are missing`, () => {
+    const badComment = {hat: 'very nice', age: '12', networth: '99999999'}
+    return request(app)
+    .post('/api/articles/11/comments')
+    .send(badComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test(`400: responds with a bad request error when given a malformed request body`, () => {
+    const awfulComment = ['bad bad bad']
+    return request(app)
+    .post('/api/articles/11/comments')
+    .send(awfulComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+})
