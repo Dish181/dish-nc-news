@@ -103,3 +103,16 @@ describe('GET/api/articles', () => {
     })
   })
 })
+
+// describe('POST/api/articles/:article_id/comments', () => {
+//   test('201: Returns the posted comment object', () => {
+//   const newComment = {username: 'dish', body: 'pretty reductive, honestly'}
+//   return request(app)
+//   .post('/api/articles/11/comments')
+//   .send(newComment)
+//   .expect(201)
+//   .then(({rows}) => {
+//     expect(rows.postedComment).toEqual(newComment)
+//   })
+//   })
+// })
