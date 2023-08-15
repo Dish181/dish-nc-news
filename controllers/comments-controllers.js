@@ -6,4 +6,5 @@ exports.getCommentsByArticle = (req, res, next) => {
     .then((comments) => {
         res.status(200).send({comments: comments})
     })
+    .catch(next)
 }

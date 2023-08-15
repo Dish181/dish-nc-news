@@ -98,5 +98,25 @@ describe('GET/api/articles/:article_id/comments', () => {
       })
     })
   })
+  test('200: responds with an empty array when passed an article_id which exists, but has no associated comments', () => {
+    return request(app)
+    .get('/api/articles/')
+  })
+  test('400: responds with a bad request error when given a non-number article_id param', () => {
+    return request(app)
+    .get('/api/articles/verygood/comments')
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('404: responds with a not found message when no articles exist for the given id', () => {
+    return request(app)
+    .get('/api/articles/999/comments')
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'article does not exist')
+    })
+  })
 }
 )
