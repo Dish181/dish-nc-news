@@ -4,7 +4,7 @@ const { getTopics } = require('./controllers/topics-controllers')
 const { getArticle, getArticles } = require('./controllers/articles-controllers')
 const {getEndpoints} = require('./controllers/general-controllers')
 
-// app.use()
+app.use(express.json())
 
 app.get('/api/topics', getTopics)
 
@@ -14,7 +14,7 @@ app.get('/api', getEndpoints)
 
 app.get('/api/articles', getArticles)
 
-// app.post()
+// app.post('/api/articles/:article_id/comments', postComment)
 
 app.use((err, req, res, next) => {
   if(err.code === '22P02'){
