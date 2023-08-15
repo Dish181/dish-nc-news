@@ -75,7 +75,7 @@ describe('GET/api/articles/:article_id', () => {
     .get('/api/articles/90')
     .expect(404)
     .then(({body}) => {
-      expect(body).toHaveProperty('msg', 'no article found with the given id')
+      expect(body).toHaveProperty('msg', 'article does not exist')
     })
   })
 })
@@ -103,6 +103,51 @@ describe('GET/api/articles', () => {
     })
   })
 })
+
+describe('GET/api/articles/:article_id/comments', () => {
+  test('200: responds with an array of comment objects relating to the given article_id sorted from newest to oldest', () => {
+    return request(app)
+    .get('/api/articles/9/comments')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.comments.length).toBe(2)
+      expect(body.comments).toBeSortedBy('created_at', {descending: true})
+      body.comments.forEach(comment => {
+        expect(comment).toHaveProperty('comment_id', expect.any(Number))
+        expect(comment).toHaveProperty('votes', expect.any(Number))
+        expect(comment).toHaveProperty('created_at', expect.any(String))
+        expect(comment).toHaveProperty('author', expect.any(String))
+        expect(comment).toHaveProperty('body', expect.any(String))
+        expect(comment).toHaveProperty('article_id', 9)
+      })
+    })
+  })
+  test('200: responds with an empty array when passed an article_id which exists, but has no associated comments', () => {
+    return request(app)
+    .get('/api/articles/11/comments')
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toHaveProperty('comments', [])
+    })
+  })
+  test('400: responds with a bad request error when given a non-number article_id param', () => {
+    return request(app)
+    .get('/api/articles/verygood/comments')
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('404: responds with a not found message when no articles exist for the given id', () => {
+    return request(app)
+    .get('/api/articles/999/comments')
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'article does not exist')
+    })
+  })
+}
+)
 
 // describe('POST/api/articles/:article_id/comments', () => {
 //   test('201: Returns the posted comment object', () => {

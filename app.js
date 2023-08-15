@@ -5,6 +5,7 @@ const { getArticle, getArticles } = require('./controllers/articles-controllers'
 const {getEndpoints} = require('./controllers/general-controllers')
 
 app.use(express.json())
+const {getCommentsByArticle} = require('./controllers/comments-controllers')
 
 app.get('/api/topics', getTopics)
 
@@ -13,6 +14,8 @@ app.get('/api/articles/:article_id', getArticle)
 app.get('/api', getEndpoints)
 
 app.get('/api/articles', getArticles)
+
+app.get('/api/articles/:article_id/comments', getCommentsByArticle)
 
 // app.post('/api/articles/:article_id/comments', postComment)
 
