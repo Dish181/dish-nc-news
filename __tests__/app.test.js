@@ -75,7 +75,7 @@ describe('GET/api/articles/:article_id', () => {
     .get('/api/articles/90')
     .expect(404)
     .then(({body}) => {
-      expect(body).toHaveProperty('msg', 'no article found with the given id')
+      expect(body).toHaveProperty('msg', 'article does not exist')
     })
   })
 })
@@ -100,7 +100,11 @@ describe('GET/api/articles/:article_id/comments', () => {
   })
   test('200: responds with an empty array when passed an article_id which exists, but has no associated comments', () => {
     return request(app)
-    .get('/api/articles/')
+    .get('/api/articles/11/comments')
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toHaveProperty('comments', [])
+    })
   })
   test('400: responds with a bad request error when given a non-number article_id param', () => {
     return request(app)
