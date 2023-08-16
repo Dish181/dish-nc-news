@@ -233,3 +233,96 @@ describe('POST/api/articles/:article_id/comments', () => {
     })
   })
 })
+
+describe('PATCH/api/articles/:article_id', () => {
+  test('200: responds with the updated article when given a valid param and body', () => {
+    const articleVotes = { inc_votes: -10 }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(articleVotes)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.updatedArticle).toEqual({
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: "2020-07-09T20:11:00.000Z",
+        votes: 90,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      })
+    })
+  })
+  test('200: responds with the updated article when given a bloated object which contains inc_votes, along with additional properties. The additional properties should be ignored and the votes property should be updated correctly', () => {
+    const articleVotes = { hair: 'blonde', inc_votes: 800, abc: 'def', body: 'trying to change the body when I shouldnt be able to hahaha' }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(articleVotes)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.updatedArticle).toEqual({
+        article_id: 1,
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+        created_at: "2020-07-09T20:11:00.000Z",
+        votes: 900,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      })
+    })
+  })
+  test('400: responds with a bad request error when given a non-number for the inc_votes value in the request body', () => {
+    const articleVotes = { inc_votes: "abc" }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(articleVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when given a decimal number in the request body', () => {
+    const articleVotes = { inc_votes: 1.5436 }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(articleVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when given an non-number as the article_id', () => {
+    const articleVotes = { inc_votes: 10 }
+    return request(app)
+    .patch('/api/articles/abc')
+    .send(articleVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when not given an inc_votes property in the request body', () => {
+    const articleVotes = { hair: 'blonde' }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(articleVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('404: responds with a not found error when given a valid format article_id which does not exist', () => {
+    const articleVotes = { inc_votes: "10" }
+    return request(app)
+    .patch('/api/articles/900')
+    .send(articleVotes)
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'article not found')
+    })
+  })
+})

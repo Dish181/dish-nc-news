@@ -4,6 +4,7 @@ const { getTopics } = require("./controllers/topics-controllers");
 const {
   getArticle,
   getArticles,
+  patchArticle
 } = require("./controllers/articles-controllers");
 const { getEndpoints } = require("./controllers/general-controllers");
 const {
@@ -24,6 +25,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 
 app.post("/api/articles/:article_id/comments", postComment);
+
+app.patch('/api/articles/:article_id', patchArticle)
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === '23502') {
