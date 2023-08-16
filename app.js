@@ -10,6 +10,7 @@ const { getEndpoints } = require("./controllers/general-controllers");
 const {
   getCommentsByArticle,
   postComment,
+  deleteComment
 } = require("./controllers/comments-controllers");
 
 app.use(express.json());
@@ -27,6 +28,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch('/api/articles/:article_id', patchArticle)
+
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === '23502') {
