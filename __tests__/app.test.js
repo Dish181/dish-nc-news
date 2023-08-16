@@ -102,6 +102,53 @@ describe('GET/api/articles', () => {
       }) 
     })
   })
+  test('200: TOPIC QUERY: the endpoint can accept a topic query, which returns only articles with the specified topic value. This test also validates that no matching results returns an empty arr', () => {
+    const topicQuery = 'mitch'
+    const filteredArticles = testData.articleData.filter(article => {
+      return article.topic === topicQuery
+    })
+    return request(app)
+    .get(`/api/articles?topic=${topicQuery}`)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles.length).toBe(filteredArticles.length)
+      body.articles.forEach(article => {
+        expect(article.topic).toBe(topicQuery)
+      })
+    })
+  })
+  test('200: SORT_BY QUERY: the endpoint can accept a sort_by query, which can be used to sort the results by any given valid column name, if no given order query, the direction is desc by default', () => {
+    return request(app)
+    .get(`/api/articles?sort_by=author`)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("author", {descending: true})
+    })
+  })
+  test('400: SORT_BY QUERY: when given an invalid column name to sort by, return a bad request error', () => {
+    return request(app)
+    .get(`/api/articles?sort_by=helmet`)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'invalid column to sort_by')
+    })
+  })
+  test('200: ORDER QUERY: the endpoint can be given an order query which specifies the direction in which to sort the returned articles', () => {
+    return request(app)
+    .get(`/api/articles?order=asc`)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("created_at", {coerce: true})
+    })
+  })
+  test('400: ORDER QUERY: when given an invalid order direction to sort in, return a bad request error', () => {
+    return request(app)
+    .get(`/api/articles?order=up`)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'invalid sort order')
+    })
+  })
 })
 
 describe('GET/api/articles/:article_id/comments', () => {
