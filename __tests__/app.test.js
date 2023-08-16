@@ -4,7 +4,6 @@ const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const endpointsJson = require("../endpoints.json");
-const { string } = require("pg-format");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
