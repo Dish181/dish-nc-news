@@ -233,3 +233,30 @@ describe('POST/api/articles/:article_id/comments', () => {
     })
   })
 })
+
+describe('DELETE/api/comments/:comment_id', () => {
+  test('204: comment is successfully deleted and no content is returned', () => {
+    return request(app)
+    .delete('/api/comments/3')
+    .expect(204)
+    .then(({body}) => {
+      expect(body).toEqual({})
+    })
+  })
+  test('400: returns bad request error when passed a comment_id in incorrect format (non-number)', () => {
+    return request(app)
+    .delete('/api/comments/abc')
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('404: returns a not found error when passed a comment_id which does not exist in the comments table', () => {
+    return request(app)
+    .delete('/api/comments/900')
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'comment not found')
+    })
+  })
+})
