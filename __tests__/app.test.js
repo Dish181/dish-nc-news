@@ -4,6 +4,7 @@ const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const endpointsJson = require("../endpoints.json");
+const { string } = require("pg-format");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -350,6 +351,22 @@ describe('DELETE/api/comments/:comment_id', () => {
     .expect(404)
     .then(({body}) => {
       expect(body).toHaveProperty('msg', 'comment not found')
+    })
+  })
+})
+
+describe('GET/api/users', () => {
+  test('200: responds with a full list of user objects', () => {
+    return request(app)
+    .get('/api/users')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.users.length).toBe(testData.userData.length)
+      body.users.forEach(user => {
+        expect(user).toHaveProperty('username', expect.any(String))
+        expect(user).toHaveProperty('name', expect.any(String))
+        expect(user).toHaveProperty('avatar_url', expect.any(String))
+      })
     })
   })
 })
