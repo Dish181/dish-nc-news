@@ -45,12 +45,19 @@ describe("GET/api", () => {
 
 describe('GET/api/articles/:article_id', () => {
   test('200: 200 status code is returned with the correct article object for the passed id', () => {
+    const param = 1
+    let comment_count = 0
+    testData.commentData.forEach(comment => {
+      if(comment.article_id === param){
+        comment_count++
+      }
+    })
     return request(app)
-    .get('/api/articles/1')
+    .get(`/api/articles/${param}`)
     .expect(200)
     .then(({body}) => {
       expect(body).toHaveProperty('article', {
-        article_id: 1,
+        article_id: param,
         title: "Living in the shadow of a great man",
         topic: "mitch",
         author: "butter_bridge",
@@ -59,6 +66,7 @@ describe('GET/api/articles/:article_id', () => {
         votes: 100,
         article_img_url:
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        comment_count: comment_count
       })
     })
   })
