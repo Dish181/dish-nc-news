@@ -1,4 +1,4 @@
-const db = require("../db/connection");
+const {db} = require("../db/connection");
 const { sort } = require("../db/data/test-data/articles");
 
 exports.fetchArticle = (articleId) => {

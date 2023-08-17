@@ -1,4 +1,4 @@
-const db = require("../db/connection");
+const {db} = require("../db/connection");
 
 exports.fetchCommentsByArticle = (article_id) => {
   return db
