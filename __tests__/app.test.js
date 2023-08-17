@@ -102,7 +102,7 @@ describe('GET/api/articles', () => {
       }) 
     })
   })
-  test('200: TOPIC QUERY: the endpoint can accept a topic query, which returns only articles with the specified topic value. This test also validates that no matching results returns an empty arr', () => {
+  test('200: TOPIC QUERY: the endpoint can accept a topic query, which returns only articles with the specified topic value.', () => {
     const topicQuery = 'mitch'
     const filteredArticles = testData.articleData.filter(article => {
       return article.topic === topicQuery
@@ -116,6 +116,15 @@ describe('GET/api/articles', () => {
         expect(article.topic).toBe(topicQuery)
       })
     })
+  })
+  test('200: TOPIC QUERY: when given a topic that does not match any articles, returns an empty array', () => {
+    const topicQuery = 'egg'
+    return request(app)
+    .get(`/api/articles?topic=${topicQuery}`)
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toEqual([])
+      })
   })
   test('200: SORT_BY QUERY: the endpoint can accept a sort_by query, which can be used to sort the results by any given valid column name, if no given order query, the direction is desc by default', () => {
     return request(app)
