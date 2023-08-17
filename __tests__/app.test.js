@@ -31,6 +31,7 @@ describe("GET/api/topics", () => {
       });
   });
 });
+
 describe("GET/api", () => {
   test("200: responds with a full list of created endpoints as a JSON object", () => {
     return request(app)
@@ -41,7 +42,6 @@ describe("GET/api", () => {
       });
   });
 });
-
 
 describe('GET/api/articles/:article_id', () => {
   test('200: 200 status code is returned with the correct article object for the passed id', () => {
