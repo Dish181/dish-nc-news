@@ -15,6 +15,7 @@ const {
 
 const {
   getUsers,
+  getUser
 } = require('./controllers/users-controllers')
 
 app.use(express.json());
@@ -36,6 +37,8 @@ app.patch('/api/articles/:article_id', patchArticle)
 app.delete('/api/comments/:comment_id', deleteComment)
 
 app.get('/api/users', getUsers)
+
+app.get('/api/users/:username', getUser)
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === '23502') {
