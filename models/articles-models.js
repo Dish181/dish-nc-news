@@ -1,5 +1,4 @@
 const {db} = require("../db/connection");
-const { sort } = require("../db/data/test-data/articles");
 
 exports.fetchArticle = (articleId) => {
   return db
@@ -13,7 +12,7 @@ exports.fetchArticle = (articleId) => {
       [articleId]
     )
     .then(({ rows }) => {
-      const article = rows[0];
+      const article = rows[0]
       if (!article) {
         return Promise.reject({
           status: 404,
@@ -73,5 +72,22 @@ exports.updateArticle = (article_id, votes) => {
       })
     }
     return rows[0]
+  })
+}
+
+exports.createArticle = (author, title, body, topic, article_img_url) => {
+  let valuesArr = [author, title, body, topic]
+  let queryString = `INSERT INTO articles (author, title, body, topic`
+  if(article_img_url){
+    valuesArr.push(article_img_url)
+    queryString += `, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;`
+  } else {
+    queryString += `) VALUES ($1, $2, $3, $4) RETURNING *;`
+  }
+  return db.query(queryString, valuesArr)
+  
+  .then(({rows}) => {
+    const {article_id} = rows[0]
+    return article_id
   })
 }
