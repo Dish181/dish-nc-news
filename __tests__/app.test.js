@@ -433,3 +433,24 @@ describe('GET/api/users', () => {
     })
   })
 })
+
+describe('GET/api/users/:username', () => {
+  test('200: responds with a single user object which corresponds to the given username', () => {
+    return request(app)
+    .get('/api/users/butter_bridge')
+    .expect(200)
+    .then(({body}) => {
+      expect(body.user).toHaveProperty('name', expect.any(String))
+      expect(body.user).toHaveProperty('username', 'butter_bridge')
+      expect(body.user).toHaveProperty('avatar_url', expect.any(String))
+    })
+  })
+  test('404: responds with a not found error when given a username which doesnt exist', () => {
+    return request(app)
+    .get('/api/users/dish181')
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'user not found')
+    })
+  })
+})
