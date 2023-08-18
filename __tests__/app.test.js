@@ -454,3 +454,95 @@ describe('GET/api/users/:username', () => {
     })
   })
 })
+
+describe('PATCH/api/comments/:comment_id', () => {
+  test(`200: updates the given comment's votes and returns the updated comment`, () => {
+    const newVotes = {inc_votes: 10}
+    const comment_id = 1
+    const originalComment = testData.commentData.find(comment => {
+      return comment.comment_id === comment_id
+    })
+    return request(app)
+    .patch(`/api/comments/${comment_id}`)
+    .send(newVotes)
+    .expect(200)
+    .then(({body}) => {
+    expect(Object.keys(body.updatedComment).length).toBe(6)
+    expect(body.updatedComment).toHaveProperty('author', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('article_id', expect.any(Number))
+    expect(body.updatedComment).toHaveProperty('body', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('comment_id', comment_id)
+    expect(body.updatedComment).toHaveProperty('created_at', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('votes', 26)
+    })
+  })
+  test('200: responds with the updated comment when given a bloated object which contains inc_votes, along with additional properties. The additional properties should be ignored and the votes property should be updated correctly', () => {
+    const commentVotes = { hair: 'blonde', inc_votes: 800, abc: 'def', body: 'trying to change the body when I shouldnt be able to hahaha' }
+    const comment_id = 1
+    return request(app)
+    .patch(`/api/comments/${comment_id}`)
+    .send(commentVotes)
+    .expect(200)
+    .then(({body}) => {
+    expect(Object.keys(body.updatedComment).length).toBe(6)
+    expect(body.updatedComment).toHaveProperty('author', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('article_id', expect.any(Number))
+    expect(body.updatedComment).toHaveProperty('body', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('comment_id', comment_id)
+    expect(body.updatedComment).toHaveProperty('created_at', expect.any(String))
+    expect(body.updatedComment).toHaveProperty('votes', 816)
+    })
+  })
+  test('400: returns a bad request error when given a non-number comment_id', () => {
+    const newVotes = {inc_votes: 10}
+    const comment_id = 'abc'
+    return request(app)
+    .patch(`/api/comments/${comment_id}`)
+    .send(newVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when given a non-number for the inc_votes value in the request body', () => {
+    const commentVotes = { inc_votes: "abc" }
+    return request(app)
+    .patch('/api/comments/1')
+    .send(commentVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when given a decimal number in the request body', () => {
+    const commentVotes = { inc_votes: 1.5436 }
+    return request(app)
+    .patch('/api/comments/1')
+    .send(commentVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test('400: responds with a bad request error when not given an inc_votes property in the request body', () => {
+    const commentVotes = { hair: 'blonde' }
+    return request(app)
+    .patch('/api/comments/1')
+    .send(commentVotes)
+    .expect(400)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'bad request')
+    })
+  })
+  test(`404: returns a not found error when given a comment_id which doesn't exist`, () => {
+    const newVotes = {inc_votes: 10}
+    const comment_id = 900
+    return request(app)
+    .patch(`/api/comments/${comment_id}`)
+    .send(newVotes)
+    .expect(404)
+    .then(({body}) => {
+      expect(body).toHaveProperty('msg', 'comment not found')
+    })
+  })
+})

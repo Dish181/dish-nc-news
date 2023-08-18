@@ -7,6 +7,8 @@ app.use(express.json());
 
 app.use('/api', apiRouter)
 
+app.patch('/api/comments/:comment_id', patchComment)
+
 app.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === '23502') {
     res.status(400).send({ msg: "bad request" });
